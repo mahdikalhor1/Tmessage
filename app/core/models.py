@@ -1,32 +1,51 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from time import timezone
+from django.utils import timezone
 from django.contrib.auth.hashers import make_password
+import re
+
+# Minimum eight characters, at least one upper case English letter, 
+# one lower case English letter,
+# one number and one special character
+PASSWORD_REGEX='^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$'
+
+def validate_password(password):
+    pattern=re.compile(PASSWORD_REGEX)
+    return pattern.match(password)
+
 class UserManager(BaseUserManager):
 
-    def _create_user(self, username, email, password, **extra_fields):
+    def _create_user(self, username, email, name, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
         if not username:
             raise ValueError("The given username must be set")
+        if not email:
+            raise ValueError("The given email must be set")
+        if not name:
+            raise ValueError("The name attribute is required.")
+        if not validate_password(password):
+            raise ValueError("Minimum eight characters, at least one upper case English letter, one lower case English letter, one number and one special character")
+        
         email = self.normalize_email(email)
         # Lookup the real model class from the global app registry so this
         # manager method can be used in migrations. This is fine because
         # managers are by definition working on the real model.
         
-        user = self.model(username=username, email=email, **extra_fields)
-        user.password = make_password(password)
+        user = self.model(username=username, email=email, name=name **extra_fields)
+        user.set_password(password)
+        
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email=None, password=None, **extra_fields):
+    def create_user(self, username, email, name, password, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(username, email, name, password, **extra_fields)
 
-    def create_superuser(self, username, email=None, password=None, **extra_fields):
+    def create_superuser(self, username, email, name, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -35,7 +54,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(username, email, name, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -59,11 +78,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_index=True,
     )
     name = models.CharField('name', max_length=250, blank=False, null=False)
-    
+
     email = models.EmailField('email address',unique=True, blank=False, db_index=True)
     bio = models.CharField('bio', max_length=500, blank=True)
     # Image = models.ImageField()
-    
+
     is_staff = models.BooleanField(
         'staff status',
         default=False,
@@ -88,8 +107,3 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'user'
         verbose_name_plural = 'users'
 
-    def get_name(self):
-        """
-        Return the name.
-        """
-        return self.name
