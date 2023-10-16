@@ -23,6 +23,6 @@ services:
     environment:
       - POSTGRES_USER=TMESSAGE
       - POSTGRES_PASSWORD=POSTGRES_PASS
-      - POSTGRES_DB=TMESSAGEPOSTGRES
+      - POSTGRES_DB=TMESSAGEDB
 volumes:
   postgres_data:
