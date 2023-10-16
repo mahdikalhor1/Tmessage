@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.db.utils import IntegrityError
 
 class UserModelTest(TestCase):
     """testing the user model"""
@@ -9,7 +10,7 @@ class UserModelTest(TestCase):
             username='newuser',
             email='yser@email.com',
             name='new user',
-            password='Password12',
+            password='Password90',
             bio=''
         )
         
@@ -25,7 +26,7 @@ class UserModelTest(TestCase):
             username='newuser',
             email='yser@email.com',
             name='new user',
-            password='Password12',
+            password='Password_12',
             bio=''
         )
         
@@ -43,28 +44,27 @@ class UserModelTest(TestCase):
             username='newuser',
             email='yser@email.com',
             name='new user',
-            password='Password12',
+            password='Password_12',
             bio=''
         )
 
-        get_user_model().objects.create_user(
-             username='newuser',
-             email='yser22@email.com',
-             name='new user',
-             password='Password12',
-             bio=''
-             )
+        # self.assertRaises(get_user_model().objects.create_user(
+        #      username='newuser',
+        #      email='yser22@email.com',
+        #      name='new user',
+        #      password='Password_12',
+        #      bio=''
+        #      )
+        #      )
 
-        # with self.assertRaises(ValueError) as eror:
-        #     get_user_model().objects.create_user(
-        #     username='newuser',
-        #     email='yser22@email.com',
-        #     name='new user',
-        #     password='Password12',
-        #     bio=''
-        #     )
-
-        #     self.assertEqual(str(eror.exception), )
+        with self.assertRaises(IntegrityError):
+            get_user_model().objects.create_user(
+            username='newuser',
+            email='yser22@email.com',
+            name='new user',
+            password='Password12',
+            bio=''
+            )
         
     
 
@@ -75,16 +75,31 @@ class UserModelTest(TestCase):
             username='newuser',
             email='yser@email.com',
             name='new user',
-            password='Password12',
+            password='Password_12',
             bio=''
         )
-        self.assertRaises(ValueError, get_user_model().objects.create_user(
-            username='newuser22',
+
+        with self.assertRaises(IntegrityError):
+            get_user_model().objects.create_user(
+                username='newuser22',
+                email='yser@email.com',
+                name='new user',
+                password='Password_12',
+                bio=''
+                )
+    
+    def test_create_user_invalid_password(self):
+        """test crating user with weak password"""
+        
+        with self.assertRaises(ValueError):
+            user=get_user_model().objects.create_user(
+            username='newuser',
             email='yser@email.com',
             name='new user',
-            password='Password12',
+            password='Passwort',
             bio=''
-            ))
+        )
     
+
     
     

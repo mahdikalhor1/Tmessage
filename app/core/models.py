@@ -7,12 +7,11 @@ import re
 
 # Minimum eight characters, at least one upper case English letter, 
 # one lower case English letter,
-# one number and one special character
-PASSWORD_REGEX='^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$'
+# and one number.
+PASSWORD_REGEX='^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$'
 
 def validate_password(password):
-    pattern=re.compile(PASSWORD_REGEX)
-    return pattern.match(password)
+    return re.fullmatch(PASSWORD_REGEX, password)
 
 class UserManager(BaseUserManager):
 
@@ -27,14 +26,14 @@ class UserManager(BaseUserManager):
         if not name:
             raise ValueError("The name attribute is required.")
         if not validate_password(password):
-            raise ValueError("Minimum eight characters, at least one upper case English letter, one lower case English letter, one number and one special character")
+            raise ValueError("Minimum eight characters, at least one upper case English letter, one lower case English letter, and one number.")
         
         email = self.normalize_email(email)
         # Lookup the real model class from the global app registry so this
         # manager method can be used in migrations. This is fine because
         # managers are by definition working on the real model.
         
-        user = self.model(username=username, email=email, name=name **extra_fields)
+        user = self.model(username=username, email=email, name=name, **extra_fields)
         user.set_password(password)
         
         user.save(using=self._db)
