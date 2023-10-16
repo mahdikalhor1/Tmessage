@@ -8,7 +8,7 @@ import re
 # Minimum eight characters, at least one upper case English letter, 
 # one lower case English letter,
 # and one number.
-PASSWORD_REGEX='^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$'
+PASSWORD_REGEX='^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$'
 
 def validate_password(password):
     return re.fullmatch(PASSWORD_REGEX, password)
