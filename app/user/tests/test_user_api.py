@@ -63,7 +63,7 @@ class UserApiTest(TestCase):
         "test creating user with weak password"
         payload={
             'username':'newuser',
-            'password':'NewUser',
+            'password':'NewUserr',
             'email':'user@gmeil.com',
             'name':'the name',
             'bio':'test bio',

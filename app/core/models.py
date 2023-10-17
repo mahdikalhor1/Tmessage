@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils import timezone
-from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
 import re
 
 # Minimum eight characters, at least one upper case English letter, 
@@ -10,8 +10,12 @@ import re
 # and one number.
 PASSWORD_REGEX='^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$'
 
-def validate_password(password):
-    return re.fullmatch(PASSWORD_REGEX, password)
+def password_validator(password):
+    if not re.fullmatch(PASSWORD_REGEX, password):
+
+        raise ValidationError(
+            "Minimum eight characters, at least one upper case English letter, one lower case English letter, and one number."
+        )
 
 class UserManager(BaseUserManager):
 
@@ -25,8 +29,7 @@ class UserManager(BaseUserManager):
             raise ValueError("The given email must be set")
         if not name:
             raise ValueError("The name attribute is required.")
-        if not validate_password(password):
-            raise ValueError("Minimum eight characters, at least one upper case English letter, one lower case English letter, and one number.")
+
         
         email = self.normalize_email(email)
         # Lookup the real model class from the global app registry so this
@@ -76,6 +79,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         },
         db_index=True,
     )
+    password = models.CharField(
+        "password", max_length=128, validators=[password_validator]
+        )
+
     name = models.CharField('name', max_length=250, blank=False, null=False)
 
     email = models.EmailField('email address',unique=True, blank=False, db_index=True)

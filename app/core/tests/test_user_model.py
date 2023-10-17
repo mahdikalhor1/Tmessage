@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
-
+from django.core.exceptions import ValidationError
+from core.models import User
 class UserModelTest(TestCase):
     """testing the user model"""
     def test_create_user(self):
@@ -91,15 +92,14 @@ class UserModelTest(TestCase):
     def test_create_user_invalid_password(self):
         """test crating user with weak password"""
         
-        with self.assertRaises(ValueError):
-            user=get_user_model().objects.create_user(
+        with self.assertRaises(ValidationError):
+            user=User(
             username='newuser',
             email='yser@email.com',
             name='new user',
             password='Passwort',
             bio=''
-        )
-    
-
-    
-    
+            )
+            user.full_clean()
+            user.save()
+            
