@@ -26,3 +26,14 @@ class UserCreateSerializer(serializers.ModelSerializer):
             user.save()
         
         return user
+    
+
+class UserSerializer(serializers.ModelSerializer):
+    """Serializer class to get otherusers profile."""
+    
+    class Meta:
+        model=get_user_model()
+        fields=['username', 'name', 'bio']
+        read_only_fields=fields
+
+

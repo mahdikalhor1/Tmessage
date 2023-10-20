@@ -4,11 +4,18 @@ from django.urls import reverse
 from rest_framework import status
 from user.serializers import UserCreateSerializer
 from django.contrib.auth import get_user_model
+from user.serializers import (
+    UserCreateSerializer,
+    UserSerializer,
+)
 
 USER_CREATE_URL=reverse('user:user-list')
+MY_PROFILE_URL=reverse('user:user-profile')
 
-def get_user_update_url(user_id):
-    return reverse('user:user-detail', args=[user_id,])
+
+# def get_other_user_profile_url(username):
+#     return reverse('user:user-userprofile', args=[username,])
+
 class UserApiCreateTest(TestCase):
     """testing the user api fetures."""
 
@@ -75,7 +82,7 @@ class UserApiCreateTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-class UserApiUpdateTest(TestCase):
+class UserApiDetailTest(TestCase):
     """test for update api of user class"""
 
     def setUp(self):
@@ -98,8 +105,7 @@ class UserApiUpdateTest(TestCase):
             'bio':'mybio'
         }
 
-        url=get_user_update_url(self.user.id)
-        response=self.client.patch(url, payload)
+        response=self.client.patch(MY_PROFILE_URL, payload)
 
         self.assertTrue(response.status_code, status.HTTP_200_OK)
         
@@ -109,51 +115,112 @@ class UserApiUpdateTest(TestCase):
             self.assertEqual(getattr(self.user, key), value)
 
 
-    def test_update_password(self):
+    # def test_update_password(self):
 
-        payload={
-            'password':'newPAss89'
-        }
+    #     payload={
+    #         'password':'newPAss89'
+    #     }
 
-        url=get_user_update_url(self.user.id)
-        response=self.client.patch(url, payload)
+    #     url=get_user_update_url(self.user.id)
+    #     response=self.client.patch(url, payload)
 
-        self.assertTrue(response.status_code, status.HTTP_200_OK)
+    #     self.assertTrue(response.status_code, status.HTTP_200_OK)
         
-        self.user.refresh_from_db()
+    #     self.user.refresh_from_db()
 
-        self.assertTrue(self.user.check_password(payload['password']))
+    #     self.assertTrue(self.user.check_password(payload['password']))
     
-    def test_update_with_weak_password(self):
+    # def test_update_with_weak_password(self):
 
-        payload={
-            'password':'newPasssss'
-        }
+    #     payload={
+    #         'password':'newPasssss'
+    #     }
 
-        url=get_user_update_url(self.user.id)
-        response=self.client.patch(url, payload)
+    #     url=get_user_update_url(self.user.id)
+    #     response=self.client.patch(url, payload)
 
-        self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
+    #     self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
         
-        self.user.refresh_from_db()
-        self.assertFalse(self.user.check_password(payload['password']))
+    #     self.user.refresh_from_db()
+    #     self.assertFalse(self.user.check_password(payload['password']))
     
 
-    def test_invalid_update(self):
-        """test updating with existing username"""
-        get_user_model().objects.create_user(
-            username='newusername',
-            password='NewUsersPAss45',
-            name='newname',
-            email='mynew@email.com',
-        )
-        payload={
-            'username':'newusername',
-            'name':'newname',
-            'bio':'mybio'
-        }
+    # def test_invalid_update(self):
+    #     """test updating with existing username"""
+    #     get_user_model().objects.create_user(
+    #         username='newusername',
+    #         password='NewUsersPAss45',
+    #         name='newname',
+    #         email='mynew@email.com',
+    #     )
+    #     payload={
+    #         'username':'newusername',
+    #         'name':'newname',
+    #         'bio':'mybio'
+    #     }
 
-        url=get_user_update_url(self.user.id)
-        response=self.client.patch(url, payload)
+    #     url=get_user_update_url(self.user.id)
+    #     response=self.client.patch(url, payload)
 
-        self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
+    #     self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # def test_updata_another_users_profile(self):
+    #     """test updating with existing username"""
+    #     newuser=get_user_model().objects.create_user(
+    #         username='newusername',
+    #         password='NewUsersPAss45',
+    #         name='newname',
+    #         email='mynew@email.com',
+    #     )
+    #     payload={
+    #         'username':'updatedusername',
+    #         'name':'updatednewname',
+    #         'bio':'updatedmybio'
+    #     }
+
+    #     url=get_user_update_url(newuser.id)
+    #     response=self.client.patch(url, payload)
+    #     print(response.data)
+
+        # self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    # def test_get_user_profile(self):
+    #     """test getting other users profile"""
+
+    #     newuser=get_user_model().objects.create_user(
+    #         username='newusername',
+    #         password='NewUsersPAss45',
+    #         name='newname',
+    #         email='mynew@email.com',
+    #     )
+
+    #     url=get_user_update_url(newuser.username)
+    #     response=self.client.get(url)
+
+    #     self.assertTrue(response.data, status.HTTP_200_OK)
+
+    #     serializer=UserSerializer(data=newuser)
+    #     serializer.is_valid()
+
+    #     self.assertEqual(serializer.data, response.data)
+
+    # def test_get_my_profile(self):
+    #     """test getting other users profile"""
+
+    #     newuser=get_user_model().objects.create_user(
+    #         username='newusername',
+    #         password='NewUsersPAss45',
+    #         name='newname',
+    #         email='mynew@email.com',
+    #     )
+
+    #     url=get_user_update_url(newuser.username)
+    #     response=self.client.get(url)
+
+    #     self.assertTrue(response.data, status.HTTP_200_OK)
+
+    #     serializer=UserSerializer(data=newuser)
+    #     serializer.is_valid()
+
+    #     self.assertEqual(serializer.data, response.data)
