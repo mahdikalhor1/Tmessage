@@ -115,75 +115,53 @@ class UserApiDetailTest(TestCase):
             self.assertEqual(getattr(self.user, key), value)
 
 
-    # def test_update_password(self):
+    def test_update_password(self):
 
-    #     payload={
-    #         'password':'newPAss89'
-    #     }
+        payload={
+            'password':'newPAss89'
+        }
 
-    #     url=get_user_update_url(self.user.id)
-    #     response=self.client.patch(url, payload)
-
-    #     self.assertTrue(response.status_code, status.HTTP_200_OK)
         
-    #     self.user.refresh_from_db()
+        response=self.client.patch(MY_PROFILE_URL, payload)
 
-    #     self.assertTrue(self.user.check_password(payload['password']))
-    
-    # def test_update_with_weak_password(self):
-
-    #     payload={
-    #         'password':'newPasssss'
-    #     }
-
-    #     url=get_user_update_url(self.user.id)
-    #     response=self.client.patch(url, payload)
-
-    #     self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
         
-    #     self.user.refresh_from_db()
-    #     self.assertFalse(self.user.check_password(payload['password']))
+        self.user.refresh_from_db()
+
+        self.assertTrue(self.user.check_password(payload['password']))
+    
+    def test_update_with_weak_password(self):
+
+        payload={
+            'password':'newPasssss'
+        }
+
+        response=self.client.patch(MY_PROFILE_URL, payload)
+
+        self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.check_password(payload['password']))
     
 
-    # def test_invalid_update(self):
-    #     """test updating with existing username"""
-    #     get_user_model().objects.create_user(
-    #         username='newusername',
-    #         password='NewUsersPAss45',
-    #         name='newname',
-    #         email='mynew@email.com',
-    #     )
-    #     payload={
-    #         'username':'newusername',
-    #         'name':'newname',
-    #         'bio':'mybio'
-    #     }
+    def test_invalid_update(self):
+        """test updating with existing username"""
+        get_user_model().objects.create_user(
+            username='newusername',
+            password='NewUsersPAss45',
+            name='newname',
+            email='mynew@email.com',
+        )
+        payload={
+            'username':'newusername',
+            'name':'newname',
+            'bio':'mybio'
+        }
 
-    #     url=get_user_update_url(self.user.id)
-    #     response=self.client.patch(url, payload)
+        response=self.client.patch(MY_PROFILE_URL, payload)
 
-    #     self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    # def test_updata_another_users_profile(self):
-    #     """test updating with existing username"""
-    #     newuser=get_user_model().objects.create_user(
-    #         username='newusername',
-    #         password='NewUsersPAss45',
-    #         name='newname',
-    #         email='mynew@email.com',
-    #     )
-    #     payload={
-    #         'username':'updatedusername',
-    #         'name':'updatednewname',
-    #         'bio':'updatedmybio'
-    #     }
-
-    #     url=get_user_update_url(newuser.id)
-    #     response=self.client.patch(url, payload)
-    #     print(response.data)
-
-        # self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
-
+        self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
 
     # def test_get_user_profile(self):
     #     """test getting other users profile"""
