@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from .serializers import UserSerializer
 from rest_framework.decorators import action
 from rest_framework.views import APIView
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import UpdateAPIView, RetrieveAPIView
 class CreateUserView(mixins.CreateModelMixin,
                     mixins.UpdateModelMixin,
                       GenericViewSet,
@@ -26,14 +26,6 @@ class CreateUserView(mixins.CreateModelMixin,
         return [permission() for permission in self.permission_classes]
 
     
-    @action(detail=True, url_name='myprofile', methods=['GET'])
-    def myprofile(self, request):
-        """return authenticated users profile"""
-        instance=self.get_object()
-        serializer=self.get_serializer(instance)
-
-        return Response(serializer.data)
-    
     
     
     # @action(detail=False, url_name='userprofile', methods=['GET'])
@@ -45,7 +37,8 @@ class CreateUserView(mixins.CreateModelMixin,
     #     return Response(serializer.data)
     
 class UserProfileManagerView(
-    UpdateAPIView
+    UpdateAPIView,
+    RetrieveAPIView,
     ):
     
     authentication_classes=[JWTAuthentication,]

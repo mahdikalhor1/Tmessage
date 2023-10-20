@@ -161,7 +161,16 @@ class UserApiDetailTest(TestCase):
         response=self.client.patch(MY_PROFILE_URL, payload)
 
         self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_my_profile(self):
+        """test getting authenticated users profile"""
+
+        response=self.client.get(MY_PROFILE_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         
+        for key,value in response.data.items():
+            self.assertEqual(value, getattr(self.user, key))
 
     # def test_get_user_profile(self):
     #     """test getting other users profile"""
