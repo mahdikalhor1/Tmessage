@@ -6,11 +6,12 @@ app_name='user'
 
 router=DefaultRouter()
 router.register('users', viewset=views.CreateUserView, basename='user')
+router.register('users', views.UserProfileView, basename='userprofile')
+print(router.urls)
 
-# print(router.urls)
 urlpatterns = [
     path('', include(router.urls)),
-    path('user-profile/',
-        view=views.UserProfileManagerView.as_view(), name='user-profile'
-        )
+    path('my-profile/',
+        view=views.MyProfileManagerView.as_view(), name='my-profile'
+        ),
 ]

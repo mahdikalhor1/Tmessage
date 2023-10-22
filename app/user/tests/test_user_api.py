@@ -10,11 +10,11 @@ from user.serializers import (
 )
 
 USER_CREATE_URL=reverse('user:user-list')
-MY_PROFILE_URL=reverse('user:user-profile')
+MY_PROFILE_URL=reverse('user:my-profile')
+# USER_PROFILE_URL=reverse('user:userprofile-detail')
 
-
-# def get_other_user_profile_url(username):
-#     return reverse('user:user-userprofile', args=[username,])
+def get_other_user_profile_url(username):
+    return reverse('user:userprofile-detail', args=[username,])
 
 class UserApiCreateTest(TestCase):
     """testing the user api fetures."""
@@ -172,25 +172,26 @@ class UserApiDetailTest(TestCase):
         for key,value in response.data.items():
             self.assertEqual(value, getattr(self.user, key))
 
-    # def test_get_user_profile(self):
-    #     """test getting other users profile"""
+    def test_get_user_profile(self):
+        """test getting other users profile"""
 
-    #     newuser=get_user_model().objects.create_user(
-    #         username='newusername',
-    #         password='NewUsersPAss45',
-    #         name='newname',
-    #         email='mynew@email.com',
-    #     )
+        newuser=get_user_model().objects.create_user(
+            username='newusername',
+            password='NewUsersPAss45',
+            name='newname',
+            email='mynew@email.com',
+        )
 
-    #     url=get_user_update_url(newuser.username)
-    #     response=self.client.get(url)
+        # payload={
+        #     'username':'newusername'
+        # }
+        url = get_other_user_profile_url('newusername')
+        response=self.client.get(url)
 
-    #     self.assertTrue(response.data, status.HTTP_200_OK)
-
-    #     serializer=UserSerializer(data=newuser)
-    #     serializer.is_valid()
-
-    #     self.assertEqual(serializer.data, response.data)
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
+        self.assertIn('username', response.data)
+        self.assertIn('name', response.data)
+        self.assertIn('bio', response.data)  
 
     # def test_get_my_profile(self):
     #     """test getting other users profile"""

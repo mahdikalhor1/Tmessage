@@ -36,7 +36,7 @@ class CreateUserView(mixins.CreateModelMixin,
         
     #     return Response(serializer.data)
     
-class UserProfileManagerView(
+class MyProfileManagerView(
     UpdateAPIView,
     RetrieveAPIView,
     ):
@@ -47,4 +47,15 @@ class UserProfileManagerView(
     
     def get_object(self):
         return self.request.user
+    
+class UserProfileView(
+    mixins.RetrieveModelMixin,
+    GenericViewSet,
+    ):
+    
+    authentication_classes=[JWTAuthentication,]
+    permission_classes=[IsAuthenticated,]
+    serializer_class=UserSerializer
+    queryset=get_user_model().objects.all()
+    lookup_field='username'
     
