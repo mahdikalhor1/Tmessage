@@ -6,8 +6,8 @@ app_name='user'
 
 router=DefaultRouter()
 router.register('users', viewset=views.CreateUserView, basename='user')
-router.register('users', views.UserProfileView, basename='userprofile')
-print(router.urls)
+router.register('userprofile', viewset=views.UserProfileView, basename='userprofile')
+
 
 urlpatterns = [
     path('', include(router.urls)),

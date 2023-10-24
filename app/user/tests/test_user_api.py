@@ -182,16 +182,14 @@ class UserApiDetailTest(TestCase):
             email='mynew@email.com',
         )
 
-        # payload={
-        #     'username':'newusername'
-        # }
-        url = get_other_user_profile_url('newusername')
+        url = get_other_user_profile_url(newuser.username)
+        
         response=self.client.get(url)
 
         self.assertTrue(response.status_code, status.HTTP_200_OK)
-        self.assertIn('username', response.data)
-        self.assertIn('name', response.data)
-        self.assertIn('bio', response.data)  
+        
+        for key , value in response.data.items():
+            self.assertEqual(getattr(newuser, key), value) 
 
     # def test_get_my_profile(self):
     #     """test getting other users profile"""
