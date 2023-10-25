@@ -191,6 +191,43 @@ class UserApiDetailTest(TestCase):
         for key , value in response.data.items():
             self.assertEqual(getattr(newuser, key), value) 
 
+class UserApiPublicTest(TestCase):
+    """requesting with unauthorized user to endpionts"""
+
+    def setUp(self):
+        self.client=APIClient()
+
+    def test_update_user(self):
+        """test request to updating with an unauthorized user."""
+        payload={
+            'name':'mynewname'
+        }
+
+        response=self.client.patch(MY_PROFILE_URL, payload)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_myprofile(self):
+        """test requesting with unauthorized user."""
+
+        response=self.client.get(MY_PROFILE_URL)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+    def test_get_other_users_profile(self):
+        """test requesting with unauthorized user."""
+
+        newuser=get_user_model().objects.create_user(
+            username='newusername',
+            password='NewUsersPAss45',
+            name='newname',
+            email='mynew@email.com',
+        )
+
+        url = get_other_user_profile_url(newuser.username)
+            
+        response=self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     # def test_get_my_profile(self):
     #     """test getting other users profile"""
 
