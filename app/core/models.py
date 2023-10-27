@@ -4,6 +4,8 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 import re
+import uuid
+import os
 
 # Minimum eight characters, at least one upper case English letter, 
 # one lower case English letter,
@@ -16,6 +18,15 @@ def password_validator(password):
         raise ValidationError(
             "Minimum eight characters, at least one upper case English letter, one lower case English letter, and one number."
         )
+
+def get_image_path(file_path):
+    
+    id=uuid.uuid4()
+
+    suffix=os.path.split(file_path)[1]
+
+    return os.path.join('images', 'userprofile', id + suffix)
+
 
 class UserManager(BaseUserManager):
 
@@ -87,7 +98,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField('email address',unique=True, blank=False, db_index=True)
     bio = models.CharField('bio', max_length=500, blank=True)
-    # Image = models.ImageField()
+    image = models.ImageField(null=True, upload_to=get_image_path)
 
     is_staff = models.BooleanField(
         'staff status',

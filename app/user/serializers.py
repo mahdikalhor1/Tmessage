@@ -37,3 +37,18 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields=fields
 
 
+class UserImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=get_user_model()
+        fields=['id', 'image']
+        extra_kwargs={
+            'id':
+            {
+                'read_only':True,
+            },
+            'image':
+            {
+                'required':True,
+            },
+        }
