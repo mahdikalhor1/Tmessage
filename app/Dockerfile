@@ -22,6 +22,11 @@ RUN adduser \
     --no-create-home \
     django-user
 
+RUN mkdir -p /vol/web/media &&\
+    mkdir -p /vol/web/static &&\
+    chown -R django-user:django-user /vol &&\
+    chmod -R 755 /vol
+
 COPY . .
 
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

@@ -31,7 +31,6 @@ class MyProfileManagerView(
         return self.request.user
 
 class MyProfileImageManagerView(
-    generics.CreateAPIView,
     generics.UpdateAPIView,
     generics.RetrieveAPIView,
     generics.DestroyAPIView,
