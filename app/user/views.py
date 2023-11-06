@@ -9,6 +9,7 @@ from .serializers import UserSerializer
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework import generics
+from rest_framework import status
 class CreateUserView(mixins.CreateModelMixin,
                       GenericViewSet,
                       ):
@@ -33,12 +34,18 @@ class MyProfileManagerView(
 class MyProfileImageManagerView(
     generics.UpdateAPIView,
     generics.RetrieveAPIView,
-    generics.DestroyAPIView,
     ):
 
     authentication_classes=[JWTAuthentication,]
     permission_classes=[IsAuthenticated,]
     serializer_class=UserImageSerializer
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.request.user.image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
     def get_object(self):
         return self.request.user

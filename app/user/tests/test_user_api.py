@@ -301,3 +301,24 @@ class TestUserImageAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     
+    def test_delete_image(self):
+        """test deleting users image"""
+
+        "send image"
+        image = SimpleUploadedFile(name='test_image.png', content=open('user/tests/test_files/test_image.png', 'rb').read(), content_type='image/png')
+        
+        payload={
+            'image': image
+        }
+
+        response=self.client.patch(PROFILE_IMAGE_URL, payload, format='multipart')
+
+        path = self.user.image.path
+
+        response=self.client.delete(PROFILE_IMAGE_URL)
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(os.path.exists(path))
+    
