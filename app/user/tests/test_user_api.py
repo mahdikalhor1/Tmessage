@@ -8,9 +8,15 @@ from user.serializers import (
     UserCreateSerializer,
     UserSerializer,
 )
+from PIL import Image
+import tempfile
+from django.core.files.uploadedfile import SimpleUploadedFile
+import os
+
 
 USER_CREATE_URL=reverse('user:user-list')
 MY_PROFILE_URL=reverse('user:my-profile')
+PROFILE_IMAGE_URL=reverse('user:profileimage')
 # USER_PROFILE_URL=reverse('user:userprofile-detail')
 
 def get_other_user_profile_url(username):
@@ -247,3 +253,51 @@ class UserApiPublicTest(TestCase):
     #     serializer.is_valid()
 
     #     self.assertEqual(serializer.data, response.data)
+
+
+class TestUserImageAPI(TestCase):
+    """tests for user's profile image."""
+
+    def setUp(self):
+        self.user=get_user_model().objects.create(
+            username='newuser',
+            email='myuser@gmail.com',
+            password='MyPass7878',
+            name='iamtheuser',
+        )
+
+        self.client=APIClient()
+        self.client.force_authenticate(self.user)
+
+    def tearDown(self):
+        """deleting user image after tests are done."""
+        self.user.image.delete()
+    
+    def test_set_image(self):
+        """test setting image of user."""
+
+
+        image = SimpleUploadedFile(name='test_image.png', content=open('user/tests/test_files/test_image.png', 'rb').read(), content_type='image/png')
+        
+        payload={
+            'image': image
+        }
+
+        response=self.client.patch(PROFILE_IMAGE_URL, payload, format='multipart')
+        
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('image', response.data)
+        self.assertTrue(os.path.exists(self.user.image.path))
+    
+    def test_send_invalid_image(self):
+        """test sending invalid data as image."""
+
+        payload={
+            'image':'invalid data',
+        }
+
+        response=self.client.patch(PROFILE_IMAGE_URL, payload, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    

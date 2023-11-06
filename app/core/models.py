@@ -19,13 +19,13 @@ def password_validator(password):
             "Minimum eight characters, at least one upper case English letter, one lower case English letter, and one number."
         )
 
-def get_image_path(file_path):
+def get_image_path(instance, filename):
     
     id=uuid.uuid4()
 
-    suffix=os.path.split(file_path)[1]
+    suffix=os.path.split(filename)[1]
 
-    return os.path.join('images', 'userprofile', id + suffix)
+    return os.path.join('images', 'userprofile', (str(id) + suffix))
 
 
 class UserManager(BaseUserManager):
