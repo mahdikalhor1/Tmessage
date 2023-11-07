@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -136,3 +137,10 @@ AUTH_USER_MODEL='core.User'
 MEDIA_ROOT='vol/media/'
 MEDIA_URL= '/media/'
 
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS={
+    'COMPONENT_SPLIT_REQUEST':True
+}
