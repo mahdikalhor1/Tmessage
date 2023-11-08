@@ -322,3 +322,29 @@ class TestUserImageAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(os.path.exists(path))
     
+
+    def test_get_my_image(self):
+        """test getting authenticated users profile image."""
+
+        response=self.client.get(PROFILE_IMAGE_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertIn('image' ,response.data)
+
+    def test_get_another_user_image(self):
+        """test getting another users profile image."""
+
+        newuser=get_user_model().objects.create_user(
+            username='newusername',
+            password='NewUsersPAss45',
+            name='newname',
+            email='mynew@email.com',
+        )
+
+        url = get_other_user_profile_url(newuser.username)
+        
+        response=self.client.get(url)
+
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
+        self.assertIn('image', response.data)

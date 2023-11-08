@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=get_user_model()
-        fields=['username', 'name', 'bio']
+        fields=['image', 'username', 'name', 'bio']
         read_only_fields=fields
 
 
