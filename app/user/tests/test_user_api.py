@@ -342,7 +342,7 @@ class TestUserImageAPI(TestCase):
             email='mynew@email.com',
         )
 
-        url = get_other_user_profile_url(newuser.uysername)
+        url = get_other_user_profile_url(newuser.username)
         
         response=self.client.get(url)
 
