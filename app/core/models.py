@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 import re
 import uuid
 import os
+from chat.models import PrivateChat
 
 # Minimum eight characters, at least one upper case English letter, 
 # one lower case English letter,
@@ -124,3 +125,31 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'user'
         verbose_name_plural = 'users'
 
+
+class Message(models.Model):
+    
+    sender=models.ForeignKey(to=User, blank=False, null=False)
+    content=models.TextField()
+    date=models.DateTimeField(auto_now_add=True)
+
+
+class PrivateChatMessageManager(models.Manager):
+    """manager class for private chat message"""
+
+    def create(self, sender, recierver, content):
+        
+        instance=self.model(sender, recierver, content)
+        instance.save()
+
+        privatechat=instance.reciever 
+
+        privatechat.messages.add(instance)
+        #a proccess must be done here to add this
+        # message to unread messages of user
+
+
+class PrivateChatMessage(Message):
+    """message object that is being used in private chats."""
+
+    reciever=models.ForeignKey(to=PrivateChat, related_name='messages', blank=False, null=False)
+    objects=PrivateChatMessageManager()

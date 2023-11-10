@@ -41,3 +41,5 @@ class PrivateChat(models.Model):
     def get_usernames(self):
         usernames=self.chatid.split('*')
         return usernames
+    
+    """messages list can be accessed using instance.messages"""
