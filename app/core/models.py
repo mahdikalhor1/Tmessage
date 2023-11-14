@@ -101,6 +101,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     bio = models.CharField('bio', max_length=500, blank=True)
     image = models.ImageField(null=True, upload_to=get_image_path)
 
+    unread_messages = models.ManyToManyField(to='PrivateChatMessage', verbose_name='unread messages')
+
     is_staff = models.BooleanField(
         'staff status',
         default=False,
@@ -128,7 +130,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Message(models.Model):
     
-    sender=models.ForeignKey(to=User, blank=False, null=False)
+    sender=models.ForeignKey(to=User, blank=False, null=False,
+                              on_delete=models.CASCADE)
     content=models.TextField()
     date=models.DateTimeField(auto_now_add=True)
 
@@ -136,20 +139,31 @@ class Message(models.Model):
 class PrivateChatMessageManager(models.Manager):
     """manager class for private chat message"""
 
-    def create(self, sender, recierver, content):
+    def create(self, sender, reciever, content):
+        """gets usernames of sender and reciever and content of message
+        then returns an object of type private chat message"""
+
+        sender_user=User.objects.get(username=sender)
+        reciever_user=User.objects.get(username=reciever)
+
+        if not reciever_user or not sender_user:
+            raise ValueError('there is no user with username: '+  reciever)
         
-        instance=self.model(sender, recierver, content)
+        private_chat=PrivateChat.objects.create([sender, reciever,])
+            
+        instance=self.model(sender=sender_user,
+                             reciever=private_chat, content=content)
         instance.save()
 
-        privatechat=instance.reciever 
+        reciever_user.unread_messages.add(instance)
 
-        privatechat.messages.add(instance)
-        #a proccess must be done here to add this
-        # message to unread messages of user
-
+        return instance
 
 class PrivateChatMessage(Message):
     """message object that is being used in private chats."""
 
-    reciever=models.ForeignKey(to=PrivateChat, related_name='messages', blank=False, null=False)
+    reciever=models.ForeignKey(to=PrivateChat, related_name='messages', blank=False,
+                                null=False, on_delete=models.CASCADE)
     objects=PrivateChatMessageManager()
+
+#fix messages that are related to deleted users
