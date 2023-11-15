@@ -36,3 +36,5 @@ class PrivateChatModel(TestCase):
         self.assertTrue(PrivateChat.objects.filter(chatid=chatid).exists())
 
         self.assertEqual(private_chat.get_usernames(), usernames)
+
+#add get pv messages api

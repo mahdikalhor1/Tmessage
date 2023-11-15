@@ -33,7 +33,7 @@ class PrivateChatManager(models.Manager):
     
 class PrivateChat(models.Model):
 
-    chatid=models.CharField('id', max_length=301, unique=True,
+    chatid=models.CharField('chaid', max_length=301, unique=True,
                          primary_key=True, db_index=True)
     
     objects=PrivateChatManager()

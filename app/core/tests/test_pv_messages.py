@@ -42,3 +42,6 @@ class TestPVMessages(TestCase):
         pvchat=PrivateChat.objects.get(chatid=pv_id)
 
         self.assertIn(pvmessage, pvchat.messages.all())
+
+#add send pv messages api
+#add get users unread messages api
